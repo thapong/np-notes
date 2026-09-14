@@ -3,5 +3,5 @@ import { resolve } from "node:path";
 
 export default defineConfig({
   resolve: { alias: { "@": resolve(__dirname, ".") } },
-  test: { environment: "node" },
+  test: { environment: "node", fileParallelism: false },
 });

@@ -28,6 +28,7 @@ services:
       STORAGE_ROOT: /app/storage
       AI_PROVIDER: ${AI_PROVIDER:-ollama}
       AI_EMBEDDING_MODEL: ${AI_EMBEDDING_MODEL:-embeddinggemma}
+      AI_REQUEST_TIMEOUT_MS: ${AI_REQUEST_TIMEOUT_MS:-10000}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       WORKER_INTERVAL_MS: ${WORKER_INTERVAL_MS:-2000}
@@ -59,6 +60,7 @@ services:
       STORAGE_ROOT: /app/storage
       AI_PROVIDER: ${AI_PROVIDER:-ollama}
       AI_EMBEDDING_MODEL: ${AI_EMBEDDING_MODEL:-embeddinggemma}
+      AI_REQUEST_TIMEOUT_MS: ${AI_REQUEST_TIMEOUT_MS:-10000}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       WORKER_INTERVAL_MS: ${WORKER_INTERVAL_MS:-2000}
@@ -71,6 +73,15 @@ services:
       - note_storage:/app/storage
     restart: unless-stopped
 
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
 volumes:
   postgres_data:
   note_storage:
+  ollama_data:

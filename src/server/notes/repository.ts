@@ -1,4 +1,5 @@
 import { query, withTransaction } from "../db";
+import { createHash } from "node:crypto";
 import type { CategoryRecord, CreateNoteInput, NoteFilters, NoteRecord, PaginatedNotes } from "./types";
 
 const mapNote = (row: Record<string, unknown>): NoteRecord => ({
@@ -77,6 +78,25 @@ export async function updateCategory(id: string, name: string): Promise<Category
 export async function deleteCategory(id: string): Promise<boolean> {
   const result = await query(`DELETE FROM categories WHERE id = $1`, [id]);
   return result.rowCount === 1;
+}
+
+export async function saveNoteEmbedding(noteId: string, text: string, vector: number[], provider: string, model: string): Promise<void> {
+  await withTransaction(async (client) => {
+    const profile = await client.query<{ id: string }>(
+      `INSERT INTO embedding_profiles (provider, model, dimension, is_active) VALUES ($1, $2, $3, true) ON CONFLICT (provider, model, dimension) DO UPDATE SET is_active = true RETURNING id`,
+      [provider, model, vector.length],
+    );
+    await client.query(`UPDATE embedding_profiles SET is_active = false WHERE id <> $1`, [profile.rows[0].id]);
+    await client.query(
+      `INSERT INTO note_embeddings (note_id, embedding_profile_id, embedding, source_text_hash) VALUES ($1, $2, $3::vector, $4) ON CONFLICT (note_id, embedding_profile_id) DO UPDATE SET embedding = EXCLUDED.embedding, source_text_hash = EXCLUDED.source_text_hash, created_at = now()`,
+      [noteId, profile.rows[0].id, `[${vector.join(",")}]`, createHash("sha256").update(text).digest("hex")],
+    );
+  });
+}
+
+export async function listNotesMissingEmbeddings(): Promise<Array<{ id: string; text_content: string }>> {
+  const result = await query<{ id: string; text_content: string }>(`SELECT n.id, n.text_content FROM notes n LEFT JOIN note_embeddings e ON e.note_id = n.id WHERE n.text_content IS NOT NULL AND e.id IS NULL ORDER BY n.captured_at DESC`);
+  return result.rows;
 }
 
 export async function listNotes(filters: NoteFilters = {}): Promise<PaginatedNotes> {

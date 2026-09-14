@@ -16,6 +16,7 @@ describe("loadConfig", () => {
     expect(config.aiEmbeddingModel).toBe("embeddinggemma");
     expect(config.ollamaBaseUrl).toBe("http://ollama:11434");
     expect(config.maxAttachmentBytes).toBe(50 * 1024 * 1024);
+    expect(config.aiRequestTimeoutMs).toBe(10000);
   });
 
   it("requires an OpenRouter key when OpenRouter is selected", () => {

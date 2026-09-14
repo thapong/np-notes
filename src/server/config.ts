@@ -11,6 +11,8 @@ export type AppConfig = {
   openRouterApiKey?: string;
   workerIntervalMs: number;
   maxAttachmentBytes: number;
+  maxWebhookAttempts: number;
+  aiRequestTimeoutMs: number;
 };
 
 function required(env: NodeJS.ProcessEnv, name: string): string {
@@ -59,5 +61,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     openRouterApiKey,
     workerIntervalMs: positiveInteger(env, "WORKER_INTERVAL_MS", 2000),
     maxAttachmentBytes: positiveInteger(env, "MAX_ATTACHMENT_BYTES", 50 * 1024 * 1024),
+    maxWebhookAttempts: positiveInteger(env, "MAX_WEBHOOK_ATTEMPTS", 5),
+    aiRequestTimeoutMs: positiveInteger(env, "AI_REQUEST_TIMEOUT_MS", 10000),
   };
 }
