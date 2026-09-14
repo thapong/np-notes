@@ -1,0 +1,1 @@
+export default function CategoriesPage() { return <div><h1 className="text-3xl font-bold">Categories</h1><p className="mt-2 text-slate-500">จัดการหมวดหมู่ของ Note</p><div className="mt-8 rounded-2xl bg-white p-8 text-center text-slate-500 shadow-sm ring-1 ring-slate-200">ยังไม่มีหมวดหมู่</div></div> }

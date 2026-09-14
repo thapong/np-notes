@@ -1,0 +1,2 @@
+import { loadConfig } from "../config";
+export async function downloadLineContent(messageId: string): Promise<Response> { const config = loadConfig(); const response = await fetch(`https://api-data.line.me/v2/bot/message/${encodeURIComponent(messageId)}/content`, { headers: { authorization: `Bearer ${config.lineChannelAccessToken}` }, signal: AbortSignal.timeout(60000) }); if (!response.ok || !response.body) throw new Error(`LINE content download failed: ${response.status}`); return response; }

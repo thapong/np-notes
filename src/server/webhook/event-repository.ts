@@ -1,0 +1,6 @@
+import { query } from "../db";
+import type { NormalizedLineEvent } from "./line-events";
+export async function persistWebhookEvents(events: NormalizedLineEvent[]) { for (const event of events) await query(`INSERT INTO webhook_events (line_event_id, event_type, payload_json) VALUES ($1,$2,$3) ON CONFLICT (line_event_id) DO NOTHING`, [event.eventId, event.type, event.raw]); return events.length; }
+export async function claimPendingEvents(limit = 10) { const result = await query(`WITH claimed AS (SELECT id FROM webhook_events WHERE status = 'pending' ORDER BY received_at FOR UPDATE SKIP LOCKED LIMIT $1) UPDATE webhook_events e SET status = 'processing', attempt_count = attempt_count + 1 FROM claimed WHERE e.id = claimed.id RETURNING e.*`, [limit]); return result.rows; }
+export async function markEventCompleted(id: string) { await query(`UPDATE webhook_events SET status = 'completed', processed_at = now(), last_error = NULL WHERE id = $1`, [id]); }
+export async function markEventFailed(id: string, error: string, retryable = true) { await query(`UPDATE webhook_events SET status = $2, last_error = $3, processed_at = CASE WHEN $2 = 'failed' THEN now() ELSE NULL END WHERE id = $1`, [id, retryable ? "pending" : "failed", error.slice(0, 2000)]); }
