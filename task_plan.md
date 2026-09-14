@@ -2,7 +2,7 @@
 
 - [x] Ticket 01: Foundation & Local Deployment
 - [/] Ticket 02: Manual Note & Keyword Search
-- [ ] Ticket 03: LINE Text to Note
+- [x] Ticket 03: LINE Text to Note
 - [ ] Ticket 04: LINE Attachments
 - [ ] Ticket 05: AI Provider & Semantic Search
 - [ ] Ticket 06: Webhook Reliability & Re-indexing
