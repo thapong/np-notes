@@ -1,2 +1,4 @@
-import { getNote } from "@/src/server/notes/repository";
+import { deleteNote, getNote, updateNote } from "@/src/server/notes/repository";
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) { const note = await getNote((await context.params).id); return note ? Response.json(note) : Response.json({ error: "Not found" }, { status: 404 }); }
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) { const body = await request.json() as { textContent?: string; categoryId?: string | null }; if (!body.textContent?.trim()) return Response.json({ error: "textContent is required" }, { status: 400 }); const note = await updateNote((await context.params).id, { textContent: body.textContent, categoryId: body.categoryId }); return note ? Response.json(note) : Response.json({ error: "Not found" }, { status: 404 }); }
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) { const deleted = await deleteNote((await context.params).id); return deleted ? new Response(null, { status: 204 }) : Response.json({ error: "Not found" }, { status: 404 }); }

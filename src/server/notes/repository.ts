@@ -49,6 +49,21 @@ export async function getNote(id: string): Promise<NoteRecord | null> {
   return result.rows[0] ? mapNote(result.rows[0]) : null;
 }
 
+export async function updateNote(id: string, input: { textContent: string; categoryId?: string | null }): Promise<NoteRecord | null> {
+  const result = await query<Record<string, unknown>>(`UPDATE notes SET text_content = $2, category_id = $3, updated_at = now() WHERE id = $1 RETURNING *`, [id, input.textContent.trim(), input.categoryId ?? null]);
+  return result.rows[0] ? mapNote(result.rows[0]) : null;
+}
+
+export async function deleteNote(id: string): Promise<boolean> {
+  const result = await query(`DELETE FROM notes WHERE id = $1`, [id]);
+  return result.rowCount === 1;
+}
+
+export async function listCategories(): Promise<CategoryRecord[]> {
+  const result = await query<CategoryRecord>(`SELECT id, name, slug, color FROM categories ORDER BY name ASC`);
+  return result.rows;
+}
+
 export async function listNotes(filters: NoteFilters = {}): Promise<PaginatedNotes> {
   const page = Math.max(1, filters.page ?? 1); const pageSize = Math.min(100, Math.max(1, filters.pageSize ?? 20)); const values: unknown[] = []; const where: string[] = [];
   if (filters.query?.trim()) { values.push(filters.query.trim()); where.push(`n.search_document @@ plainto_tsquery('simple', $${values.length})`); }
