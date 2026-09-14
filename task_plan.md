@@ -1,7 +1,7 @@
 # Personal Note System Task Plan
 
 - [x] Ticket 01: Foundation & Local Deployment
-- [/] Ticket 02: Manual Note & Keyword Search
+- [x] Ticket 02: Manual Note & Keyword Search
 - [x] Ticket 03: LINE Text to Note
 - [x] Ticket 04: LINE Attachments
 - [x] Ticket 05: AI Provider & Semantic Search
