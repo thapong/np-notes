@@ -15,6 +15,24 @@ The LINE Webhook endpoint is `POST /api/line/webhook`. It requires a publicly re
 
 Set `OPENROUTER_API_KEY` in `.env` when `AI_PROVIDER=openrouter`. Keep `.env` out of source control. The Settings page can health-check the selected provider and re-index Notes that do not yet have embeddings.
 
+## Deploy with Docker
+
+Use the production Compose bundle on a private server. It builds the Next.js app and worker from the multi-stage `Dockerfile`, keeps PostgreSQL internal to the Compose network, and persists database/attachment data in named volumes.
+
+```powershell
+Copy-Item .env.example .env
+# Edit .env and set real LINE credentials and database/AI settings.
+docker compose -f docker-compose.deploy.yml up -d --build
+```
+
+The application is available at `http://<server>:3300` by default. Put it behind an HTTPS reverse proxy before registering the LINE Webhook URL. To stop the deployment without deleting data:
+
+```powershell
+docker compose -f docker-compose.deploy.yml down
+```
+
+To use the optional Ollama service, add `--profile ollama` to the `up` command and pull the configured embedding model inside the Ollama container.
+
 ## Verification
 
 ```text
