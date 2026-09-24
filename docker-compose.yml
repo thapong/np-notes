@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://np_note:change-me@postgres:5432/np_note}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-np_note}:${POSTGRES_PASSWORD:-change-me}@postgres:5432/${POSTGRES_DB:-np_note}
       LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:-not-configured}
       LINE_CHANNEL_ACCESS_TOKEN: ${LINE_CHANNEL_ACCESS_TOKEN:-not-configured}
       STORAGE_ROOT: /app/storage
@@ -33,7 +33,7 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       WORKER_INTERVAL_MS: ${WORKER_INTERVAL_MS:-2000}
       MAX_ATTACHMENT_BYTES: ${MAX_ATTACHMENT_BYTES:-52428800}
-      PORT: 3000
+      PORT: 4000
       HOSTNAME: 0.0.0.0
     depends_on:
       postgres:
@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
       target: worker
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://np_note:change-me@postgres:5432/np_note}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-np_note}:${POSTGRES_PASSWORD:-change-me}@postgres:5432/${POSTGRES_DB:-np_note}
       LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:-not-configured}
       LINE_CHANNEL_ACCESS_TOKEN: ${LINE_CHANNEL_ACCESS_TOKEN:-not-configured}
       STORAGE_ROOT: /app/storage
